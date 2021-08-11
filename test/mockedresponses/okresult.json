@@ -1,0 +1,17 @@
+{
+    "accepted": [
+        "xxx@gmail.com"
+    ],
+    "rejected": [],
+    "envelopeTime": 1157,
+    "messageTime": 1018,
+    "messageSize": 321,
+    "response": "250 2.0.0 OK  1628699554 s5sm27239571pfk.114 - gsmtp",
+    "envelope": {
+        "from": "",
+        "to": [
+            "xxx@gmail.com"
+        ]
+    },
+    "messageId": "<a57eb9fe-86fe-8d69-1c67-10dc5509e824@danizavtz-Inspiron-3442>"
+}
