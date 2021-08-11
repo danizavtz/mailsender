@@ -34,3 +34,11 @@ jobs:
         SMTPUSER: test
         SMTPPASS: test
         SMTPRECIPIENT: x@maill.com
+    - run: npm run coverage
+      env:
+        PORT: 3000
+        SMTPUSER: test
+        SMTPPASS: test
+        SMTPRECIPIENT: x@maill.com
+        CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+    - run: npm i -g codecov && npm run coverage:report && codecov -t ${{ secrets.CODECOV_TOKEN }}
