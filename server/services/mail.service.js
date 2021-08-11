@@ -11,19 +11,15 @@ const transporter = nodemailer.createTransport({
 });
 
 exports.sendEmail = function(req, res) {
-    const mailOptions = {
+    const mailmsg = {
         from: process.env.SMTPUSER,
         subject: '[danizavtz.com.br] ',
         text: 'Mensagem de: ' + req.body.nome + ', email: [' + req.body.email + '] ' + req.body.mensagem,
         to: process.env.SMTPRECIPIENT
     }
-    transporter.sendMail(mailOptions).then((trans) => {
-        res.status(200);
-        res.json(trans);
-        res.end();
+    transporter.sendMail(mailmsg).then((trans) => {
+        res.status(200).json(trans)
     }).catch((error) => {
-        res.status(500);
-        res.json(error);
-        res.end();
+        res.status(500).json(error);
     });
 }
