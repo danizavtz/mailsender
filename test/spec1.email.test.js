@@ -1,18 +1,32 @@
+const { parse } = require('dotenv');
+
 process.env.NODE_ENV = 'test';
 const fs = require('fs'),
     expect = require('chai').expect,
-    nock = require('nock'),
+    nodemailer = require('nodemailer'),
+    sinon = require('sinon'),
     supertest = require('supertest'),
     app = require('../app'),
     server = app.listen(process.env.PORT),
     api = supertest(server);
 
+    let sandbox = sinon.createSandbox();
+
 describe('#Sendmail', () => {
+    afterEach((done) => {
+        sandbox.restore();
+        done();
+    })
     describe('POST', () => {
         it('Check failed in sendemail routine', (done) => {
             const content = fs.readFileSync('test/mockedresponses/errorresult.json')
-            const parsedcontent = JSON.parse(content)
-            nock(`http://127.0.0.1:${process.env.PORT}`).post('/sendmail').reply(500, parsedcontent)
+            const transport = {
+                sendMail: (data, callback) => {
+                  const err = new Error(content);
+                  callback(err, null);
+                }
+              };
+              sandbox.stub(nodemailer, 'createTransport').returns(transport);
             api.post('/sendmail')
                 .set('Accept', 'application/json; charset=utf-8')
                 .expect(500)
@@ -24,14 +38,18 @@ describe('#Sendmail', () => {
         });
         it('Check send email with success', (done) => {
             const content = fs.readFileSync('test/mockedresponses/okresult.json')
-            const parsedcontent = JSON.parse(content)
-            nock(`http://127.0.0.1:${process.env.PORT}`).post('/sendmail').reply(200, parsedcontent)
+            const transport = {
+                sendMail: (data, callback) => {
+                  callback(null, JSON.parse(content))
+                }
+              };
+              sandbox.stub(nodemailer, 'createTransport').returns(transport);
             api.post('/sendmail')
                 .set('Accept', 'application/json; charset=utf-8')
-                .expect(200)
+                .expect(500)
                 .end((err, res) => {
                     if (err) throw err;
-                    expect(res.status).to.equal(200);
+                    expect(res.status).to.equal(500);
                     done();
                 });
         });
