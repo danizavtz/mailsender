@@ -1,8 +1,7 @@
 const expect = require('chai').expect,
     supertest = require('supertest'),
     app = require('../app'),
-    server = app.listen(),
-    api = supertest(server);
+    api = supertest(app.listen());
 
 describe('#Home', () => {
     describe('GET', () => {

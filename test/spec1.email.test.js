@@ -4,8 +4,7 @@ const fs = require('fs'),
     sinon = require('sinon'),
     supertest = require('supertest'),
     app = require('../app'),
-    server = app.listen(),
-    api = supertest(server);
+    api = supertest(app.listen());
     const sandbox = sinon.createSandbox();
 
 describe('#Sendmail', () => {
