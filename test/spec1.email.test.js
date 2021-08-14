@@ -3,14 +3,13 @@ const { parse } = require('dotenv');
 process.env.NODE_ENV = 'test';
 const fs = require('fs'),
     expect = require('chai').expect,
-    nodemailer = require('nodemailer'),
+    Mailer = require('nodemailer/lib/mailer'),
     sinon = require('sinon'),
     supertest = require('supertest'),
     app = require('../app'),
-    server = app.listen(process.env.PORT),
+    server = app.listen(),
     api = supertest(server);
-
-    let sandbox = sinon.createSandbox();
+    const sandbox = sinon.createSandbox();
 
 describe('#Sendmail', () => {
     afterEach((done) => {
@@ -20,13 +19,7 @@ describe('#Sendmail', () => {
     describe('POST', () => {
         it('Check failed in sendemail routine', (done) => {
             const content = fs.readFileSync('test/mockedresponses/errorresult.json')
-            const transport = {
-                sendMail: (data, callback) => {
-                  const err = new Error(content);
-                  callback(err, null);
-                }
-              };
-              sandbox.stub(nodemailer, 'createTransport').returns(transport);
+            sandbox.stub(Mailer.prototype, 'sendMail').rejects(content);
             api.post('/sendmail')
                 .set('Accept', 'application/json; charset=utf-8')
                 .expect(500)
@@ -38,18 +31,13 @@ describe('#Sendmail', () => {
         });
         it('Check send email with success', (done) => {
             const content = fs.readFileSync('test/mockedresponses/okresult.json')
-            const transport = {
-                sendMail: (data, callback) => {
-                  callback(null, JSON.parse(content))
-                }
-              };
-              sandbox.stub(nodemailer, 'createTransport').returns(transport);
+            sandbox.stub(Mailer.prototype, 'sendMail').resolves(content);
             api.post('/sendmail')
                 .set('Accept', 'application/json; charset=utf-8')
-                .expect(500)
+                .expect(200)
                 .end((err, res) => {
                     if (err) throw err;
-                    expect(res.status).to.equal(500);
+                    expect(res.status).to.equal(200);
                     done();
                 });
         });
