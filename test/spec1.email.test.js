@@ -1,6 +1,3 @@
-const { parse } = require('dotenv');
-
-process.env.NODE_ENV = 'test';
 const fs = require('fs'),
     expect = require('chai').expect,
     Mailer = require('nodemailer/lib/mailer'),
